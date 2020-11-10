@@ -6,9 +6,8 @@ namespace UnityStandardAssets._2D
 {
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] public float m_MaxSpeed;                    // The fastest the player can travel in the x axis.
-        [SerializeField] private float m_JumpForce;                // Amount of force added when the player jumps.
-        private float moveInput;
+        [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
+        [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
         [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;  // Amount of maxSpeed applied to crouching movement. 1 = 100%
         [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
@@ -22,11 +21,6 @@ namespace UnityStandardAssets._2D
         private Rigidbody2D m_Rigidbody2D;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
 
-        //MAKING 3 new float variables
-        private float jumpTimeCounter;
-        public float jumpTime;
-        private bool isJumping;
-
         private void Awake()
         {
             // Setting up references.
@@ -39,7 +33,6 @@ namespace UnityStandardAssets._2D
 
         private void FixedUpdate()
         {
-
             m_Grounded = false;
 
             // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
@@ -54,44 +47,6 @@ namespace UnityStandardAssets._2D
 
             // Set the vertical animation
             m_Anim.SetFloat("vSpeed", m_Rigidbody2D.velocity.y);
-
-            //Setting new code
-            moveInput = Input.GetAxisRaw("Horizontal");
-            m_Rigidbody2D.velocity = new Vector2(moveInput * m_MaxSpeed, m_Rigidbody2D.velocity.y);
-
-        }
-
-        void Update()
-        {
-            m_Grounded = Physics2D.OverlapCircle(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-
-            if (m_Grounded == true && Input.GetKeyDown(KeyCode.Space))
-            {
-                isJumping = true;
-                jumpTimeCounter = jumpTime;
-                m_Rigidbody2D.velocity = Vector2.up * m_JumpForce;
-            }
-
-            if (Input.GetKey(KeyCode.Space) && isJumping == true)
-            {
-
-                if (jumpTimeCounter > 0)
-                {
-                    m_Rigidbody2D.velocity = Vector2.up * m_JumpForce;
-                    jumpTimeCounter -= Time.deltaTime;
-                }
-                else
-                {
-                    isJumping = false;
-                }
-
-            }
-
-            if (Input.GetKeyUp(KeyCode.Space))
-            {
-                isJumping = false;
-            }
-
         }
 
 
@@ -135,7 +90,14 @@ namespace UnityStandardAssets._2D
                     Flip();
                 }
             }
-
+            // If the player should jump...
+            if (m_Grounded && jump && m_Anim.GetBool("Ground"))
+            {
+                // Add a vertical force to the player.
+                m_Grounded = false;
+                m_Anim.SetBool("Ground", false);
+                m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+            }
         }
 
 
