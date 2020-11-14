@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - damage
+  - collectable
+  - end
   layers:
   - Default
   - TransparentFX
@@ -39,6 +41,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 910280275
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Collectables
+    uniqueID: 4061476153
     locked: 0
